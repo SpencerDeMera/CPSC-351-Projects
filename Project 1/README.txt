@@ -1,4 +1,4 @@
 CPSC-351 Operating Systems Project 1
 
-Name(s): Spencer DeMera
+Name(s): Spencer DeMera, Stefan Parrish, 
 Email(s): spencer.demera@csu.fullerton.edu
