@@ -12,3 +12,4 @@ This is a main repo for my various Operating Systems projects and homeworks in C
 
 * C++
 * Pipes
+* Threads
