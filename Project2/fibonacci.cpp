@@ -1,4 +1,9 @@
-#include<bits/stdc++.h>
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <bits/stdc++.h>
 using namespace std;
 
 vector<int> fibArr;
