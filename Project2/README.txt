@@ -1,4 +1,6 @@
 CPSC-351 Operating Systems Project 2
 
-Name(s): Spencer DeMera, Emily Pufahl, 
-Email(s): spencer.demera@csu.fullerton.edu, epufahl@csu.fullerton.edu, 
+Members:
+  Spencer DeMera; spencer.demera@csu.fullerton.edu
+  Emily Pufahl; epufahl@csu.fullerton.edu
+  William Duong; wpduong@csu.fullerton.edu
