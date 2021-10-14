@@ -1,52 +1,66 @@
 #include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
-#include <pthread.h>
-#include <bits/stdc++.h>
-#include <iostream>
-#include <sstream>
-using namespace std;
+ #include <stdlib.h>
+ #include <ctype.h>
+ #include <pthread.h>
+ #include <bits/stdc++.h>
+ #include <iostream>
+ #include <sstream>
+ using namespace std;
 
-char* phraseArr;
+ char* phraseArr;
+ int i = 0; //counter
 
-void *alpha(void *arg) {
-    istringstream iss(phraseArr);
+ void *alpha(void *arg) {
+     istringstream iss(phraseArr);
 
-    char* temp;
-    temp = (char*)arg;
+      char* temp;
+      temp = (char*)arg;
 
-  do {
-        iss >> temp;
+     do {
+         iss >> temp;
 
-        if (isalpha(temp[0])) {
-            cout << "alpha: " << temp << endl;
-        } else if (isdigit(temp[0])) {
-            cout << "numeric: " << temp << endl;
-        }
+         if (isalpha(temp[0])) {
+             cout << "alpha: " << temp << endl;
+         }
 
- } while (iss);
-}
+     } while (iss);
+ }
 
+ void *numeric(void *arg) {
+     istringstream iss(phraseArr);
 
-int main (int argc, char *argv[]) {
-    // Error check for input
-    if (argc != 2) {
-        fprintf(stderr, "usage: ./<filename> <phrase>\n");
-        return -1;
-    }
+      char* temp;
+      temp = (char*)arg;
 
-    phraseArr = argv[1];
+     do {
+         string temp;
 
-    pthread_t p1, p2;
+         iss >> temp;
 
-    pthread_create(&p1, NULL, alpha, (void*)phraseArr);
-    pthread_create(&p2, NULL, alpha, (void*)phraseArr);
+         if (isdigit(temp[0])) {
+             cout << "numeric: " << temp << endl;
+         }
+         
+     } while (iss);
+ }
 
-    pthread_join(p1, NULL);
-    pthread_join(p2, NULL);
+ int main (int argc, char *argv[]) {
+     // Error check for input
+     if (argc != 2) {
+         fprintf(stderr, "usage: ./<filename> <phrase>\n");
+         return -1;
+     }
 
+     phraseArr = argv[1];
 
+     pthread_t p1, p2;
 
-    cout << "\nProgram Ending...\n";
-    return 0;
-}
+     pthread_create(&p1, NULL, alpha, (void*)phraseArr);
+     pthread_create(&p2, NULL, numeric, (void*)phraseArr);
+
+     pthread_join(p1, NULL);
+     pthread_join(p2, NULL);
+
+     cout << "\nProgram Ending...\n";
+     return 0;
+ }
