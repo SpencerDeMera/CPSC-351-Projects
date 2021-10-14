@@ -12,38 +12,21 @@ char* phraseArr;
 void *alpha(void *arg) {
     istringstream iss(phraseArr);
 
-    do {
-        string temp;
+    char* temp;
+    temp = (char*)arg;
 
+  do {
         iss >> temp;
 
         if (isalpha(temp[0])) {
             cout << "alpha: " << temp << endl;
         } else if (isdigit(temp[0])) {
-            // TODO
-        } else {
-            // TODO 
-        }
-    } while (iss);
-}
-
-void *numeric(void *arg) {
-    istringstream iss(phraseArr);
-
-    do {
-        string temp;
-
-        iss >> temp;
-
-        if (isdigit(temp[0])) {
             cout << "numeric: " << temp << endl;
-        } else if (isalpha(temp[0])) {
-            // TODO
-        } else {
-           // TODO 
         }
-    } while (iss);
+
+ } while (iss);
 }
+
 
 int main (int argc, char *argv[]) {
     // Error check for input
@@ -57,10 +40,12 @@ int main (int argc, char *argv[]) {
     pthread_t p1, p2;
 
     pthread_create(&p1, NULL, alpha, (void*)phraseArr);
-    pthread_create(&p2, NULL, numeric, (void*)phraseArr);
+    pthread_create(&p2, NULL, alpha, (void*)phraseArr);
 
     pthread_join(p1, NULL);
     pthread_join(p2, NULL);
+
+
 
     cout << "\nProgram Ending...\n";
     return 0;
