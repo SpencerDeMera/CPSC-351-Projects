@@ -3,101 +3,45 @@
 #include <ctype.h>
 #include <pthread.h>
 #include <unistd.h>
+#include <sched.h>
 #include <bits/stdc++.h>
 #include <iostream>
 #include <sstream>
 using namespace std;
 
-char* phraseArr;
-bool flag;
-// int currIndex = 0;
-// vector<string> phrase;
-// int SIZE = 0;
+string phraseArr;
+vector<string> phrase;
+int currIndex = 0;
+int SIZE = 0;
 
 void *alpha(void *arg) {
-    istringstream iss(phraseArr);
-    // do {
-    //     string temp;
-    //     iss >> temp;
-    //     phrase.push_back(temp); // pushes word 'temp' to end of vector
-    //     SIZE++;
-    // } while (iss);
-
-    // while (phrase[currIndex] < SIZE) {
-    //     if (flag == true) { // last char was alpha
-    //         if (isalpha(phrase[currIndex])) {
-    //             cout << "alpha: " << phrase[currIndex] << endl;
-    //         } else {
-    //             // TODO 
-    //             // cout << "not alpha: " << temp << endl; 
-    //         }
-    //         flag = false; // next char is alpha
-    //         currIndex++;
-    //     } else {
-    //         sleep(1);
-    //     }
-    // }
-
-    do {
-        string temp;
-        iss >> temp;
-
-        if (flag == true) { // last char before space was alpha
-            if (isalpha(temp[0])) {
-                cout << "alpha: " << temp << endl;
-            } else {
-                // TODO 
-                // cout << "not alpha: " << temp << endl; 
-            }
-            // cout << "alpha: " << temp << endl;
-            flag = false; // next char is alpha
+    while (currIndex <= SIZE) {
+        string temp = phrase[currIndex];
+        if (isalpha(temp[0])) {
+            cout << "alpha: " << phrase[currIndex] << endl;
+            currIndex++;
+        } else if (temp[0] == NULL) {
+            break;
         } else {
-            sleep(1);
+            sleep(1); 
         }
-    } while (iss);
+    }
+    pthread_exit(0);
 }
 
 void *numeric(void *arg) {
-    istringstream iss(phraseArr);
-    // do {
-    //     string temp;
-    //     iss >> temp;
-    //     phrase.push_back(temp); // pushes word 'temp' to end of vector
-    //     SIZE++;
-    // } while (iss);
-
-    // while (phrase[currIndex] < SIZE) {
-    //     if (flag == false) { // last char was alpha
-    //         if (isdigit(phrase[currIndex])) {
-    //             cout << "numeric: " << phrase[currIndex] << endl;
-    //         } else {
-    //             // TODO 
-    //             // cout << "not alpha: " << temp << endl; 
-    //         }
-    //         flag = true; // next char is alpha
-    //         currIndex++;
-    //     } else {
-    //         sleep(1);
-    //     }
-    // }
-
-    do {
-        string temp;
-        iss >> temp;
-
-        if (flag == false) { // last char before space was numeric
-            if (isdigit(temp[0])) {
-                cout << "numeric: " << temp << endl;
-            } else {
-                // TODO 
-                // cout << "not numeric: " << temp << endl; 
-            }
-            // cout << "numeric: " << temp << endl;
-            flag = true; // next char is alpha
+    while (currIndex <= SIZE) {
+        string temp = phrase[currIndex];
+        if (isdigit(temp[0])) {
+            cout << "numeric: " << phrase[currIndex] << endl;
+            currIndex++;
+        } else if (temp[0] == NULL) {
+            break;
         } else {
-            sleep(1);
+            sleep(1); 
         }
-    } while (iss);
+    }
+    pthread_exit(0);
 }
 
 int main (int argc, char *argv[]) {
@@ -108,16 +52,19 @@ int main (int argc, char *argv[]) {
     }
 
     phraseArr = argv[1];
-    if (isalpha(phraseArr[0])) {
-        flag = true; // is alpha
-    } else {
-        flag = false; // is numeric
+    istringstream iss(phraseArr);
+    // Iterates over string and adds each word / phrase to 'vector<string> phraseArr'
+    while (iss) {
+        string temp;
+        iss >> temp;
+        phrase.push_back(temp); // pushes word 'temp' to end of vector
+        SIZE++;
     }
 
     pthread_t p1, p2;
 
-    pthread_create(&p1, NULL, alpha, (void*)phraseArr);
-    pthread_create(&p2, NULL, numeric, (void*)phraseArr);
+    pthread_create(&p1, NULL, alpha, NULL);
+    pthread_create(&p2, NULL, numeric, NULL);
 
     pthread_join(p1, NULL);
     pthread_join(p2, NULL);
