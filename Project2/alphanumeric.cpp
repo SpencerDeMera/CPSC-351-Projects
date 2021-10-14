@@ -13,8 +13,7 @@
  void *alpha(void *arg) {
      istringstream iss(phraseArr);
 
-      char* temp;
-      temp = (char*)arg;
+      string temp;
 
      do {
          iss >> temp;
@@ -29,8 +28,7 @@
  void *numeric(void *arg) {
      istringstream iss(phraseArr);
 
-      char* temp;
-      temp = (char*)arg;
+      string temp;
 
      do {
          string temp;
