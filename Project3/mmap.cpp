@@ -34,7 +34,7 @@ int main(int argc, char** argv) {
 	}
 
 	// Set offset size to 0
-  	off_t offset = 0;
+  	off_t pageOffset = 0;
 
 	// Gets file size
 	struct stat stats;
@@ -66,7 +66,7 @@ int main(int argc, char** argv) {
 		}
 
 		// map the file into memory
-		char* inData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, inFl, 0);
+		char* inData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, inFl, pageOffset);
 		// Error check for mapping success
 		if (!inData) {
 			cout << "\n" << "mapping did not succeed" << "\n";
@@ -74,7 +74,7 @@ int main(int argc, char** argv) {
 		}
 
 		// map the file into memory
-		char* outData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, outFl, 0);
+		char* outData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, outFl, pageOffset);
 		// Error check for mapping success
 		if (!outData) {
 			cout << "\n" << "mapping did not succeed" << "\n";
@@ -92,7 +92,7 @@ int main(int argc, char** argv) {
 
 		// Add pagesize to offset
 		// (Move onto the next page of data)
-		offset += pagesize;
+		pageOffset += pagesize;
 	}
 
 	close(inFl); // close input file
