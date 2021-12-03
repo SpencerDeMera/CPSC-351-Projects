@@ -17,46 +17,85 @@ int main(int argc, char** argv) {
 		exit(1);
 	}
 
-	// Open teh file 
-	int fd = open(argv[1], O_RDWR);
+	// Open the file 
+	int inFl = open(argv[1], O_RDONLY);
 	// Error check for if file open
-	if (fd < 0) {
+	if (inFl < 0) {
 		cout << "\n" << "input file cannot be opened" << "\n";
 		exit(1);
 	}
 
-	// Gets file size
-	struct stat stats;
-	if (stat(argv[1], &stats) == 0) {
-		cout << endl << "file size " << stats.st_size;
-	} else {
-		cout << "Unable to get file properties.\n";
-	}
-
-	// Gets page size
-	int pagesize = getpagesize();
-	cout << endl << "page size is " << pagesize << "\n";
-	
-	// map the file into memory
-	char* data = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
-
-	// Error check for mapping success
-	if (!data) {
-		cout << "\n" << "mapping did not succeed" << "\n";
+	// Create a new file
+	int outFl = creat(argv[2], O_CREAT);
+	// Error check for if file created
+	if (outFl < 0) {
+		cout << "\n" << "output file cannot be created" << "\n";
 		exit(1);
 	}
 
-	// Print the whole file character-by-character
-	for (int fIndex = 0; fIndex < pagesize; ++fIndex) {
-		cout << data[fIndex];
-		// if ((fIndex%1000) == 1) {
-		// 	cout<<endl;
-		// }
+	// Set offset size to 0
+  	off_t offset = 0;
+
+	// Gets file size
+	struct stat stats;
+	cout << "File Properties: \n";
+	if (stat(argv[1], &stats) == 0) {
+		cout << "\tfile size: " << stats.st_size;
+	} else {
+		cout << "Unable to get file properties.\n";
 	}
-	cout << endl;
+	// Save file size
+	int fSize = stats.st_size;
 
-	munmap(data, pagesize); // unmap the shared memory region
+	// Gets page size
+	int pagesize = getpagesize();
+	cout << endl << "\tpage size: " << pagesize << "\n";
 
-	close(fd); // close file
+	// initialize the output file to recieve data from inFile.txt
+	lseek(outFl, fSize - 1, SEEK_SET);
+	write(outFl, "", 1);
+	lseek(outFl, 0, SEEK_SET);
+
+	while (fSize > 0) {
+		// Setup for looping through the pages of input file
+		if (fSize < pagesize) {
+			pagesize = fSize;
+			fSize = 0;
+		} else {
+			fSize -= pagesize;
+		}
+
+		// map the file into memory
+		char* inData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, inFl, 0);
+		// Error check for mapping success
+		if (!inData) {
+			cout << "\n" << "mapping did not succeed" << "\n";
+			exit(1);
+		}
+
+		// map the file into memory
+		char* outData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, outFl, 0);
+		// Error check for mapping success
+		if (!outData) {
+			cout << "\n" << "mapping did not succeed" << "\n";
+			exit(1);
+		}
+
+		// copy pagesize amount of data to outData file
+		memcpy(outData, inData, pagesize);
+		munmap(inData, pagesize); // unmap the shared memory region
+		munmap(outData, pagesize); // unmap the shared memory region
+
+		// shift the offsets of the in and output files
+		lseek(inFl, pagesize, SEEK_SET);
+		lseek(outFl, pagesize, SEEK_SET);
+
+		// Add pagesize to offset
+		// (Move onto the next page of data)
+		offset += pagesize;
+	}
+
+	close(inFl); // close input file
+	close(outFl); // close output file
 	return 0;
 }
