@@ -51,22 +51,10 @@ int main(int argc, char** argv) {
 	int pagesize = getpagesize();
 	cout << endl << "\tpage size: " << pagesize << "\n";
 
-	// initialize the output file to recieve data from inFile.txt
-	lseek(outFl, fSize - 1, SEEK_SET);
-	write(outFl, "", 1);
-	lseek(outFl, 0, SEEK_SET);
-
-	while (fSize > 0) {
-		// Setup for looping through the pages of input file
-		if (fSize < pagesize) {
-			pagesize = fSize;
-			fSize = 0;
-		} else {
-			fSize -= pagesize;
-		}
-
+	// Loops through pages based off filesize
+	for (int i = 0; i < fSize; i += pagesize) {
 		// map the file into memory
-		char* inData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, inFl, pageOffset);
+		char* inData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, inFl, i);
 		// Error check for mapping success
 		if (!inData) {
 			cout << "\n" << "mapping did not succeed" << "\n";
@@ -74,7 +62,7 @@ int main(int argc, char** argv) {
 		}
 
 		// map the file into memory
-		char* outData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, outFl, pageOffset);
+		char* outData = (char*)mmap(NULL, pagesize, PROT_READ | PROT_WRITE, MAP_SHARED, outFl, i);
 		// Error check for mapping success
 		if (!outData) {
 			cout << "\n" << "mapping did not succeed" << "\n";
@@ -85,14 +73,6 @@ int main(int argc, char** argv) {
 		memcpy(outData, inData, pagesize);
 		munmap(inData, pagesize); // unmap the shared memory region
 		munmap(outData, pagesize); // unmap the shared memory region
-
-		// shift the offsets of the in and output files
-		lseek(inFl, pagesize, SEEK_SET);
-		lseek(outFl, pagesize, SEEK_SET);
-
-		// Add pagesize to offset
-		// (Move onto the next page of data)
-		pageOffset += pagesize;
 	}
 
 	close(inFl); // close input file
