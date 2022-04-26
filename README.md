@@ -1,5 +1,5 @@
 # Spencer's Repo for
-# CPSC 351 Operating Systems Concepts
+# Operating Systems Projects
 
 - - - -
 
